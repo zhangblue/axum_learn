@@ -1,0 +1,72 @@
+[package]
+name = "axum_learn"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["base-common", "database-common", "redis-common", "migration"]
+
+
+[dependencies]
+tokio = { workspace = true }
+# Serde / json
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_with = { workspace = true } # 用于自定义序列化与反序列化函数
+# 数据库操作
+sea-orm = { workspace = true }
+# 操作时间
+chrono = { workspace = true }
+# Axum
+axum = { workspace = true }
+tower-http = { workspace = true }
+tower-cookies = { workspace = true } # 用来操作cookie
+redis = { workspace = true }# 用来操作redis
+
+# Others
+lazy-regex = { workspace = true } # 惰性正则解析
+async-trait = { workspace = true }
+strum_macros = { workspace = true }  # 用于处理枚举,可以将枚举转化为有格式的字符串
+uuid = { workspace = true }
+log = { workspace = true } # 用于生成和解析uuid
+rs-snowflake = { workspace = true } # 用于雪花算法计算
+
+database-common = { workspace = true }
+redis-common = { workspace = true }
+base-common = { workspace = true }
+migration = { workspace = true }
+
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+# Serde / json
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+serde_with = { version = "3.8.1" } # 用于自定义序列化与反序列化函数
+# 数据库操作
+sea-orm = { version = "0.12", features = [
+    "sqlx-postgres",
+    "runtime-tokio-native-tls",
+    "macros",
+] }
+# 操作时间
+chrono = { version = "0.4" }
+# Axum
+axum = { version = "0.7", features = ["macros"] }
+tower-http = { version = "0.5.2", features = ["fs"] }
+tower-cookies = "0.10.0"                              # 用来操作cookie
+redis = { version = "0.25.4" } # 用来操作redis
+
+# Others
+lazy-regex = "3.1.0"                                        # 惰性正则解析
+async-trait = "0.1.80"
+strum_macros = "0.26.2"                                     # 用于处理枚举,可以将枚举转化为有格式的字符串
+uuid = { version = "1.8.0", features = ["v4", "fast-rng"] }
+log = "0.4.21" # 用于生成和解析uuid
+rs-snowflake = { version = "0.6.0" } # 用于雪花算法计算
+
+# 自定义lib
+database-common = { path = "database-common" }
+redis-common = { path = "redis-common" }
+base-common = { path = "base-common" }
+migration = { path = "migration" }
+
