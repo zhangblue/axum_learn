@@ -18,20 +18,20 @@ pub async fn user_login(application_state: &ApplicationState, login: LoginPlayLo
         .filter(entity::users::Column::Account.eq(login.username))
         .filter(entity::users::Column::Password.eq(login.pwd));
 
-    println!("login sql = [{}]", select.build(DatabaseBackend::Postgres).to_string());
+    log::info!("login sql = [{}]", select.build(DatabaseBackend::Postgres).to_string());
 
     let login_user = select.into_model::<UserDto>()
         .one(application_state.db_conn.as_ref()).await;
 
 
     if let Err(err) = login_user {
-        println!("登录失败");
+        log::info!("登录失败");
         return Err(error::Error::DatabaseOperationError { msg: err.to_string() });
     }
 
     return match login_user.unwrap() {
         None => {
-            println!("没查询到数据");
+            log::info!("没查询到数据");
             Ok(None)
         }
         Some(data) => {

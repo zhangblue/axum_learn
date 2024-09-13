@@ -50,7 +50,7 @@ pub async fn list_user(app_state: &ApplicationState) -> error::Result<Vec<UserVo
             entity::users::Relation::Roles.def(),
         );
 
-    println!("list user sql = {}", select.build(DbBackend::Postgres).to_string());
+    log::info!("list user sql = {}", select.build(DbBackend::Postgres).to_string());
 
     let vec_data = select.into_model::<UserDto>().all(app_state.db_conn.as_ref()).await;
 

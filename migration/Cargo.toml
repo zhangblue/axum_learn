@@ -13,4 +13,6 @@ async-std = { version = "1", features = ["attributes", "tokio1"] }
 sea-orm-migration = { version = "0.12", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
 chrono = { workspace = true }
 database-common = { path = "../database-common" }
+log = { workspace = true }
+log4rs = { workspace = true }
 

@@ -1,34 +1,36 @@
 use axum::{
-    extract::{Path, Query},
     http::{Method, Uri},
     middleware,
-    response::{Html, IntoResponse, Response},
-    routing::get,
+    response::{IntoResponse, Response},
     Json, Router,
 };
 use ctx::Ctx;
-use serde::Deserialize;
-use serde_json::json;
 use tower_cookies::CookieManagerLayer;
-use tower_http::services::ServeDir;
 use uuid::Uuid;
 use migration::MigratorTrait;
 
-use crate::{error::Error, log::log_request};
+use crate::{error::Error, system_log::log_request};
 use crate::web::common::{ApplicationState};
 use crate::web::{role, ticket, user};
+use crate::web::hello_world::routes_hello::{routes_hello, routes_static};
 
 mod ctx;
 mod error;
-mod log;
+mod system_log;
 mod web;
 
 mod test;
 
 #[tokio::main]
 async fn main() -> error::Result<()> {
+
+    // 初始化log
+    init_log();
+    // 读取配置文件
+    let app_config = web::common::load_app_config();
+
     // 初始化 ModelController
-    let mc = ApplicationState::new().await?;
+    let mc = ApplicationState::new(&app_config).await?;
     // 数据库表创建
     migration::Migrator::up(mc.db_conn.as_ref(), None).await.expect("创建表失败");
 
@@ -54,10 +56,11 @@ async fn main() -> error::Result<()> {
         .fallback_service(routes_static()); // 如果访问失败，设置静态资源
 
     // 启动服务 开始
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
+    let listener = tokio::net::TcpListener::bind(&app_config.web.listening_address)
         .await
         .unwrap();
-    println!("->> LISTENING on {}\n", listener.local_addr().unwrap());
+
+    log::info!("->> LISTENING on {}\n", listener.local_addr().unwrap());
     axum::serve(listener, routes_all).await.unwrap();
 
     // 启动服务 结束
@@ -72,8 +75,8 @@ async fn main_response_mapper(
     req_method: Method,
     res: Response,
 ) -> Response {
-    println!("->> {:12} - main_response_mapper", "统一 response 格式化");
-    println!("  ->> 此处会触发调用Ctx的提取器. 当前ctx为：[{:?}]", ctx);
+    log::info!("->> {:12} - main_response_mapper", "统一 response 格式化");
+    log::info!("  ->> 此处会触发调用Ctx的提取器. 当前ctx为：[{:?}]", ctx);
 
     let uuid = Uuid::new_v4();
 
@@ -85,13 +88,13 @@ async fn main_response_mapper(
     let error_response = client_status_error
         .as_ref()
         .map(|(status_code, client_error)| {
-            let client_error_body = json!({
+            let client_error_body = serde_json::json!({
                 "error":{
                     "type":client_error.as_ref(),
                     "req_uuid":uuid.to_string()
                 }
             });
-            println!("  ->> client_error_body（返回给客户端的信息）: {client_error_body}");
+            log::info!("  ->> client_error_body（返回给客户端的信息）: {client_error_body}");
 
             // 根据 client_error_body 创建一个新的 response
             (*status_code, Json(client_error_body)).into_response()
@@ -101,44 +104,13 @@ async fn main_response_mapper(
     let client_error = client_status_error.unzip().1;
     let _ = log_request(uuid, req_method, uri, ctx, service_error, client_error).await;
 
-    println!();
+    log::info!("");
 
     error_response.unwrap_or(res)
 }
 
-// hello的路由
-fn routes_hello() -> Router {
-    Router::new()
-        .route("/hello", get(handler_hello))
-        .route("/hello2/:name", get(handler_hello2))
+
+fn init_log() {
+    log4rs::init_file("config/log4rs.yaml", Default::default()).unwrap();
 }
 
-// 静态资源的路由
-fn routes_static() -> Router {
-    Router::new().nest_service("/static", ServeDir::new("./"))
-}
-
-#[derive(Debug, Deserialize)]
-struct HelloParams {
-    name: Option<String>,
-}
-
-// /hello?name=张三
-async fn handler_hello(Query(params): Query<HelloParams>) -> impl IntoResponse {
-    println!("->> {:<12} - handler_hello", "HANDLER");
-
-    let name = params.name.as_deref().unwrap_or("World");
-    Html(format!("Hello <strong>{name}!!!</strong>"))
-}
-
-// /hello2/张三
-async fn handler_hello2(Path(params): Path<HelloParams>) -> impl IntoResponse {
-    println!(
-        "->> {:<12} - handler_hello2 - {}",
-        "HANDLER",
-        params.name.as_deref().unwrap_or("World")
-    );
-
-    let name = params.name.as_deref().unwrap_or("World");
-    Html(format!("Hello <strong>{name}!!!</strong>"))
-}

@@ -26,13 +26,13 @@ pub enum Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        println!("->> {:<12} - {self:?}", "INTO_RES");
+        log::info!("->> {:<12} - {self:?}", "INTO_RES");
 
         // 创建一个response的占位符
         let mut response = StatusCode::INTERNAL_SERVER_ERROR.into_response();
 
         // 向response中插入Error
-        println!("  ->> 向response的扩展空间中插入Error");
+        log::info!("  ->> 向response的扩展空间中插入Error");
         response.extensions_mut().insert(self);
 
         response

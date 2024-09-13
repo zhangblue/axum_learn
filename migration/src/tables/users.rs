@@ -10,7 +10,7 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
-        println!("create table user begin");
+        log::info!("create table user begin");
         let table_create_statement = Table::create().table(Users::Table).if_not_exists()
             .col(ColumnDef::new(Users::Id).string_len(19).primary_key().not_null())
             .col(ColumnDef::new(Users::Account).string().not_null())
@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
             .create_table(table_create_statement).await?;
 
         seed_data(manager).await;
-        println!("create table user finish");
+        log::info!("create table user finish");
 
         Ok(())
     }
@@ -58,11 +58,11 @@ async fn seed_data(manager: &SchemaManager<'_>) {
                           .do_nothing()
                           .to_owned()
         ).exec(manager.get_connection()).await {
-        println!("写入 [超级管理员] 发生错误. {}", e);
+        log::info!("写入 [超级管理员] 发生错误. {}", e);
         return;
     }
 
-    println!("初始化 [users] 表数据完成");
+    log::info!("初始化 [users] 表数据完成");
 }
 
 #[derive(DeriveIden)]

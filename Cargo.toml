@@ -27,14 +27,19 @@ redis = { workspace = true }# 用来操作redis
 lazy-regex = { workspace = true } # 惰性正则解析
 async-trait = { workspace = true }
 strum_macros = { workspace = true }  # 用于处理枚举,可以将枚举转化为有格式的字符串
-uuid = { workspace = true }
-log = { workspace = true } # 用于生成和解析uuid
+uuid = { workspace = true } # 用于生成uuid
+log = { workspace = true } # log的接口，没有实现
 rs-snowflake = { workspace = true } # 用于雪花算法计算
+log4rs = { workspace = true } # 用于打印log
+config = { workspace = true } # 用于读取配置文件
 
 database-common = { workspace = true }
 redis-common = { workspace = true }
 base-common = { workspace = true }
 migration = { workspace = true }
+
+
+
 
 [workspace.dependencies]
 tokio = { version = "1", features = ["full"] }
@@ -63,6 +68,10 @@ strum_macros = "0.26.2"                                     # 用于处理枚举
 uuid = { version = "1.8.0", features = ["v4", "fast-rng"] }
 log = "0.4.21" # 用于生成和解析uuid
 rs-snowflake = { version = "0.6.0" } # 用于雪花算法计算
+
+config = { version = "0.14.0" } # 用于读取toml文件
+#env_logger = { version = "0.11.3" } # 用于打印log
+log4rs = { version = "1.3.0" } # 用于打印log
 
 # 自定义lib
 database-common = { path = "database-common" }

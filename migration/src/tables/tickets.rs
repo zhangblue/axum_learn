@@ -16,7 +16,7 @@ impl MigrationTrait for Migration {
 
         manager.create_table(table_create_statement).await?;
 
-        println!("create table tickets finish");
+        log::info!("create table tickets finish");
 
         Ok(())
     }

@@ -1,0 +1,23 @@
+refresh_rate: 30 seconds
+appenders:
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S.%f)} - {l} {t}[{L}] {m}{n}"
+  requests:
+    kind: file
+    path: "log/requests.log"
+    encoder:
+      pattern: "{d(%Y-%m-%d %H:%M:%S.%f)} - {l} {t}[{L}] {m}{n}"
+root:
+  level: warn
+  appenders:
+    - stdout
+loggers:
+  axum_learn: # 设置axum_learn下面的所有内容为info级别
+    level: info
+  app::requests:
+    level: info
+    appenders:
+      - requests
+    additive: false

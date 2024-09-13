@@ -31,8 +31,8 @@ impl<S: Send + Sync> FromRequestParts<S> for Ctx {
     type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> crate::error::Result<Self> {
-        println!("->> {:<12} - Ctx", "提取器", );
-        println!("  ->> 从 parts 扩展中提取出 Ctx", );
+        log::info!("->> {:<12} - Ctx", "提取器", );
+        log::info!("  ->> 从 parts 扩展中提取出 Ctx", );
 
         parts
             .extensions

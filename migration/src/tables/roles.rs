@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
         manager.create_table(table_create_statement).await?;
 
         seed_data(manager).await;
-        println!("create table roles finish");
+        log::info!("create table roles finish");
         Ok(())
     }
 
@@ -45,11 +45,11 @@ async fn seed_data(manager: &SchemaManager<'_>) {
                           .do_nothing()
                           .to_owned()
         ).exec(manager.get_connection()).await {
-        println!("写入 [超级管理员角色] 发生错误. {}", e);
+        log::info!("写入 [超级管理员角色] 发生错误. {}", e);
         return;
     }
 
-    println!("初始化 [roles] 表数据完成");
+    log::info!("初始化 [roles] 表数据完成");
 }
 
 #[derive(DeriveIden)]

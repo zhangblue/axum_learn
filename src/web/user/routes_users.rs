@@ -20,7 +20,7 @@ async fn create_user(
     State(mut app_stat): State<ApplicationState>,
     Json(user_fc): Json<UserForCreate>,
 ) -> Result<Json<UserVo>> {
-    println!("->> {:<12} - create_user", "处理程序");
+    log::info!("->> {:<12} - create_user", "处理程序");
 
     let create_result = service_user::create_user(&mut app_stat, user_fc).await?;
     Ok(Json(create_result))
@@ -28,7 +28,7 @@ async fn create_user(
 
 // 列表所有用户
 async fn list_user(State(app_state): State<ApplicationState>) -> Result<Json<Vec<UserVo>>> {
-    println!("->> {:<12} - list_user", "处理程序");
+    log::info!("->> {:<12} - list_user", "处理程序");
     let user_vo_list = service_user::list_user(&app_state).await?;
     Ok(Json(user_vo_list))
 }
@@ -36,7 +36,7 @@ async fn list_user(State(app_state): State<ApplicationState>) -> Result<Json<Vec
 
 // 删除用户
 async fn delete_user(State(app_state): State<ApplicationState>, Path(id): Path<String>) -> Result<Json<UserVo>> {
-    println!("->> {:<12} - delete_user", "处理程序");
+    log::info!("->> {:<12} - delete_user", "处理程序");
     let delete_user = service_user::delete_user(&app_state, &id).await;
 
     return match delete_user {

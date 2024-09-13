@@ -43,7 +43,7 @@ pub async fn log_request(
         error_data,
     };
 
-    println!("  ->> log_request（记录一个服务器log日志）: {}", json!(log_line));
+    log::info!("  ->> log_request（记录一个服务器log日志）: {}", json!(log_line));
 
     Ok(())
 }
