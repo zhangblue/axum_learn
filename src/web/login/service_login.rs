@@ -3,11 +3,11 @@ use database_common::entity;
 use migration::JoinType;
 use crate::{error};
 use crate::web::common::ApplicationState;
-use crate::web::login::model::LoginPlayLoad;
+use crate::web::login::model::LoginPayLoad;
 use crate::web::user::model::UserDto;
 
 // 执行登录逻辑
-pub async fn user_login(application_state: &ApplicationState, login: LoginPlayLoad) -> error::Result<Option<UserDto>> {
+pub async fn user_login(application_state: &ApplicationState, login: LoginPayLoad) -> error::Result<Option<UserDto>> {
     let select = entity::users::Entity::find()
         .join(
             JoinType::InnerJoin,

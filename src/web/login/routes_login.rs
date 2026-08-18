@@ -6,18 +6,18 @@ use tower_cookies::{Cookie, Cookies};
 use crate::{error::{Error, Result}, web};
 use crate::web::common::{ApplicationState, AppState};
 use crate::web::login;
-use crate::web::login::model::LoginPlayLoad;
+use crate::web::login::model::LoginPayLoad;
 
 pub fn routes(mc: ApplicationState) -> Router {
     let app_state = AppState { mc };
     Router::new().route("/api/login", post(api_login)).with_state(app_state)
 }
 
-async fn api_login(State(application_stat): State<ApplicationState>, cookies: Cookies, Json(playload): Json<LoginPlayLoad>) -> Result<Json<Value>> {
+async fn api_login(State(application_stat): State<ApplicationState>, cookies: Cookies, Json(payload): Json<LoginPayLoad>) -> Result<Json<Value>> {
     log::info!("->> {:<12} - api_login", "HANDLER");
 
     // 数据库权限登录验证
-    let login_user = login::service_login::user_login(&application_stat, playload).await;
+    let login_user = login::service_login::user_login(&application_stat, payload).await;
 
     match login_user {
         Ok(Some(data)) => {

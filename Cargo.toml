@@ -50,7 +50,7 @@ serde_with = { version = "3.8.1" } # 用于自定义序列化与反序列化函�
 # 数据库操作
 sea-orm = { version = "0.12", features = [
     "sqlx-postgres",
-    "runtime-tokio-native-tls",
+    "runtime-tokio-rustls",
     "macros",
 ] }
 # 操作时间
@@ -78,4 +78,3 @@ database-common = { path = "database-common" }
 redis-common = { path = "redis-common" }
 base-common = { path = "base-common" }
 migration = { path = "migration" }
-
